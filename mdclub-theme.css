@@ -1,0 +1,129 @@
+/**
+ * Taylor Swift Club 自定义MDClub主题样式
+ * 此样式表用于覆盖MDClub的默认样式，使其与Taylor Swift Club网站保持一致
+ */
+
+:root {
+  --primary-color: #2c3e50;
+  --accent-color: #bfa14a;
+  --background-color: #f5f3ee;
+  --text-color: #6e6259;
+  --card-bg-color: rgba(255, 255, 255, 0.9);
+  --shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* 全局样式覆盖 */
+body {
+  background-color: var(--background-color) !important;
+  color: var(--text-color) !important;
+  font-family: 'Roboto', sans-serif !important;
+}
+
+/* 导航栏样式 */
+.mdui-appbar,
+.mdui-toolbar {
+  background-color: var(--card-bg-color) !important;
+  box-shadow: var(--shadow) !important;
+  border-radius: 12px !important;
+  margin: 10px 20px !important;
+}
+
+/* 按钮样式 */
+.mdui-btn-raised {
+  background-color: var(--accent-color) !important;
+}
+
+.mdui-btn {
+  border-radius: 8px !important;
+}
+
+/* 卡片样式 */
+.mdui-card {
+  border-radius: 12px !important;
+  box-shadow: var(--shadow) !important;
+  background-color: var(--card-bg-color) !important;
+  transition: all 0.3s ease !important;
+}
+
+.mdui-card:hover {
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.2) !important;
+  transform: translateY(-2px) !important;
+}
+
+/* 链接样式 */
+a {
+  color: var(--accent-color) !important;
+  transition: color 0.3s ease !important;
+}
+
+a:hover {
+  color: var(--primary-color) !important;
+  text-decoration: none !important;
+}
+
+/* 标题样式 */
+.mdui-typo-headline,
+.mdui-typo-title {
+  font-family: 'Somer', cursive, 'Roboto', sans-serif !important;
+  color: var(--primary-color) !important;
+}
+
+/* 表单元素样式 */
+.mdui-textfield-input {
+  border-radius: 8px !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  padding: 8px 12px !important;
+}
+
+/* 标签样式 */
+.mdui-chip {
+  border-radius: 16px !important;
+  background-color: rgba(191, 161, 74, 0.2) !important;
+}
+
+/* 分页样式 */
+.mdui-pagination-item {
+  border-radius: 50% !important;
+}
+
+.mdui-pagination-item-active {
+  background-color: var(--accent-color) !important;
+}
+
+/* 自定义动画 */
+@keyframes flowing-bg {
+  0% {background-position: 0% 50%;}
+  25% {background-position: 50% 100%;}
+  50% {background-position: 100% 50%;}
+  75% {background-position: 50% 0%;}
+  100% {background-position: 0% 50%;}
+}
+
+/* 添加噪点纹理 */
+body::before {
+  content: '';
+  position: fixed;
+  left: 0; top: 0; right: 0; bottom: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.15;
+  background: url('https://www.transparenttextures.com/patterns/noise.png');
+}
+
+/* 确保内容在纹理上方 */
+.mdui-container, .mdui-appbar, .mdui-drawer {
+  position: relative;
+  z-index: 1;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .mdui-appbar,
+  .mdui-toolbar {
+    margin: 5px 10px !important;
+  }
+  
+  .mdui-container {
+    padding: 0 10px !important;
+  }
+}
