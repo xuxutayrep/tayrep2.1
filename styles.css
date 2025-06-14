@@ -1,0 +1,82 @@
+/* 通用样式 */
+body {
+  /* 删除米色背景，替换为渐变色背景 */
+  background: linear-gradient(135deg, #e0e0e0 0%, #606060 50%, #c0c0c0 100%);
+  color: #6e6259;
+  font-family: 'Roboto', sans-serif;
+  transition: background 0.5s;
+  position: relative;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  left: 0; top: 0; right: 0; bottom: 0;
+  pointer-events: none;
+  z-index: 0;
+  /* 降低噪声层透明度 */
+  opacity: 0.08;
+  background: url('https://www.transparenttextures.com/patterns/noise.png');
+}
+
+.container, .section-padding, nav, footer {
+  position: relative;
+  z-index: 1;
+}
+
+.section-padding {
+  padding: 5rem 1rem;
+}
+
+/* 导航栏 */
+.navbar {
+  background-color: rgba(255,255,255,0.35); /* 透明度调整为75% */
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  justify-content: center !important;
+  border-radius: 12px;
+  margin: 10px 20px;
+  backdrop-filter: blur(20px); /* 增加模糊效果 */
+  position: sticky;
+  top: 10px;
+  z-index: 1000;
+  transition: all 0.3s ease;
+}
+
+.navbar:hover {
+  box-shadow: 0 6px 25px rgba(0,0,0,0.2);
+  transform: translateY(-2px);
+}
+
+.navbar .nav-link {
+  font-weight: 500;
+  padding: 10px 15px;
+  transition: color 0.3s ease;
+}
+
+.navbar .nav-link:hover {
+  color: #bfa14a;
+}
+
+@font-face {
+  font-family: 'Somer';
+  src: url('Somer.ttf') format('truetype');
+  font-display: swap;
+}
+
+.navbar .navbar-brand {
+  margin: 0 auto;
+  font-family: 'Somer', cursive, 'Roboto', sans-serif !important;
+  font-size: 1.2rem;
+  letter-spacing: 2px;
+}
+
+/* ... 所有其他CSS规则保持不变 ... */
+
+/* 修改：确保在手机端展开导航栏时，赞赏按钮不会被遮挡 */
+@media (max-width: 992px) {
+  .navbar-collapse.show + .d-flex {
+    margin-top: 20px; /* 增加顶部间距，避免与展开的导航栏重叠 */
+  }
+}
