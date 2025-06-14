@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TSClubCN</title>
+
+  <style>
+    /* 通用样式 */
+    body {
+      /* 删除米色背景，替换为渐变色背景 */
+      background: linear-gradient(135deg, #e0e0e0 0%, #606060 50%, #c0c0c0 100%);
+      color: #6e6259;
+      font-family: 'Roboto', sans-serif;
+      transition: background 0.5s;
+      position: relative;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    
+    body::before {
+      content: '';
+      position: fixed;
+      left: 0; top: 0; right: 0; bottom: 0;
+      pointer-events: none;
+      z-index: 0;
+      /* 降低噪声层透明度 */
+      opacity: 0.08;
+      background: url('https://www.transparenttextures.com/patterns/noise.png');
+    }
+
+    .container, .section-padding, nav, footer {
+      position: relative;
+      z-index: 1;
+    }
+
+    .section-padding {
+      padding: 5rem 1rem;
+    }
+
+    /* 导航栏 */
+    .navbar {
+      background-color: rgba(255,255,255,0.35); /* 透明度调整为75% */
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      justify-content: center !important;
+      border-radius: 12px;
+      margin: 10px 20px;
+      backdrop-filter: blur(20px); /* 增加模糊效果 */
+      position: sticky;
+      top: 10px;
+      z-index: 1000;
+      transition: all 0.3s ease;
+    }
+
+    .navbar:hover {
+      box-shadow: 0 6px 25px rgba(0,0,0,0.2);
+      transform: translateY(-2px);
+    }
+
+    .navbar .nav-link {
+      font-weight: 500;
+      padding: 10px 15px;
+      transition: color 0.3s ease;
+    }
+
+    .navbar .nav-link:hover {
+      color: #ffffff; /* 原值: #bfa14a */
+    }
+
+    @font-face {
+      font-family: 'Somer';
+      src: url('Somer.ttf') format('truetype');
+      font-display: swap;
+    }
+
+    .navbar .navbar-brand {
+      margin: 0 auto;
+      font-family: 'Somer', cursive, 'Roboto', sans-serif !important;
+      font-size: 1.2rem;
+      letter-spacing: 2px;
+    }
+
+    .navbar .container {
+      position: relative;
+    }
+
+    .navbar-toggler {
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 10;
+    }
+
+    /* 图片瀑布流 */
+    .masonry {
+      column-count: 4;
+      column-gap: 1rem;
+    }
+
+    @media (max-width: 1200px) {
+      .masonry { column-count: 3; }
+    }
+
+    @media (max-width: 992px) {
+      .masonry { column-count: 2; }
+    }
+
+    @media (max-width: 768px) {
+      .masonry { column-count: 3; }
+      .card-img-top {
+        height: 100px !important;
+        object-fit: cover;
+      }
+
+      .language-selector {
+        position: fixed !important;
+        right: 15px !important;
+        bottom: 15px !important;
+        top: auto !important;
+        transform: none !important;
+        z-index: 9999 !important;
+      }
+
+      .language-selector .dropdown-menu {
+        bottom: 100% !important;
+        top: auto !important;
+        margin-bottom: 5px !important;
+        right: 0 !important;
+        left: auto !important;
+      }
+
+      .navbar .btn.me-2 {
+        position: absolute !important;
+        left: 10px !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        padding: 3px 10px !important;
+        font-size: 12px !important;
+      }
+
+      #music .container.d-flex {
+        flex-direction: column !important;
+        gap: 2rem;
+      }
+
+      #music .col-md-6,
+      #music .music-player {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-bottom: 1.5rem;
+      }
+
+      #music .music-player {
+        border-left: none;
+        padding-left: 0;
+      }
+    }
+
+    /* 修改：让整个卡片（包括图片和文字）一起放大，并确保不会挡住其他内容 */
+    .masonry .card {
+      margin-bottom: 1rem;
+      break-inside: avoid;
+      transition: transform 0.3s cubic-bezier(.4,2,.6,1);
+      overflow: hidden;
+      position: relative;
+      z-index: 1;
+    }
+
+    .masonry .card:hover {
+      transform: scale(1.08);
+      z-index: 10;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .masonry .card-body {
+      position: relative;
+      background: white;
+    }
+
+    .card-img-top,
+    .rounded-circle,
+    #album-cover {
+      transition: transform 0.3s cubic-bezier(.4,2,.6,1);
+    }
+
+    .card-img-top:hover,
+    .rounded-circle:hover,
+    #album-cover:hover {
+      transform: scale(1.08);
+    }
+
+    /* 商品、视频、官方照片等图片在手机端三列显示 */
+    @media (max-width: 768px) {
+      #products .row-cols-md-3 > .col {
+        flex: 0 0 100%;
+        max-width: 100%;
+      }
+
+      #videos .row-cols-md-3 > .col,
+      #video-photo-list .col {
+        flex: 0 0 33.3333%;
+        max-width: 33.3333%;
+      }
+
+      #products .card-img-top {
+        height: auto !important;
+        max-width: 100%;
+        object-fit: contain;
+      }
+
+      #videos .card-img-top,
+      #video-photo-list .card-img-top {
+        height: 100px;
+        object-fit: cover;
+      }
+
+      .rounded-circle {
+        width: 36px !important;
+        height: 36px !important;
+      }
+    }
+
+    /* 音乐播放区 */
+    .music-player {
+      border-left: 1px solid #eee;
+      padding-left: 2rem;
+    }
+
+    /* 时间轴 */
+    .timeline {
+      position: relative;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .timeline::after {
+      content: '';
+      position: absolute;
+      width: 2px;
+      background-color: #eee;
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      margin-left: -1px;
+    }
+
+    .timeline-item {
+      padding: 1rem 4rem;
+      position: relative;
+      background-color: inherit;
+      width: 50%;
+    }
+
+    .timeline-item::after {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      right: -10px;
+      background-color: var(--primary-color);
+      border: 4px solid white;
+      top: 15px;
+      border-radius: 50%;
+      z-index: 1;
+    }
+
+    @media (max-width: 768px) {
+      .timeline-item {
+        width: 100%;
+        padding-left: 2rem;
+      }
+
+      .timeline-item::after {
+        left: -10px;
+      }
+    }
+
+    /* 商品图悬停切换 */
+    .product-image {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .product-image img {
+      transition: transform 0.3s ease;
+    }
+
+    .product-image:hover img {
+      transform: scale(1.1);
+    }
+
+    /* 新增：所有图片悬停放大效果 */
+    .card-img-top,
+    .rounded-circle,
+    #album-cover {
+      transition: transform 0.3s cubic-bezier(.4,2,.6,1);
+    }
+
+    .card-img-top:hover,
+    .rounded-circle:hover,
+    #album-cover:hover {
+      transform: scale(1.08);
+    }
+
+    /* 视频作品和关于我栏目半透明背景 */
+    #videos,
+    #official {
+      background: rgba(255,255,255,0.7);
+      border-radius: 24px;
+      box-shadow: 0 4px 32px 0 rgba(140, 140, 200, 0.10);
+      backdrop-filter: blur(2px);
+    }
+
+    /* 音乐封面图片大小限制 */
+    .music-player #album-cover {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+    }
+
+    .list-group-item img.rounded-circle {
+      width: 48px;
+      height: 48px;
+      object-fit: cover;
+    }
+
+    /* 简约播放器样式 */
+    .player-container {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      margin: 20px 0;
+      gap: 10px;
+    }
+
+    .progress-container {
+      position: relative;
+      flex-grow: 1;
+      height: 4px;
+    }
+
+    .progress-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: rgba(0,0,0,0.1);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: #bfa14a;
+      border-radius: 2px;
+    }
+
+    .progress-input {
+      position: absolute;
+      top: -8px;
+      left: 0;
+      width: 100%;
+      height: 20px;
+      opacity: 0;
+      cursor: pointer;
+      margin: 0;
+    }
+
+    .time-display {
+      font-size: 12px;
+      color: #6e6259;
+      min-width: 40px;
+    }
+
+    .play-btn-container {
+      display: flex;
+      justify-content: center;
+      margin: 10px 0 20px;
+    }
+
+    .play-btn {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: white;
+      color: #333;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    }
+
+    .play-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+    }
+
+    .play-btn i {
+      font-size: 18px;
+      margin-left: 3px;
+    }
+
+    /* 视频作品图片比例统一 */
+    #video-photo-list .video-img {
+      width: 100%;
+      max-width: 220px;
+      height: auto;
+      max-height: 320px;
+      object-fit: contain;
+      background: #f5f3ee;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px 0 rgba(0,0,0,0.04);
+      transition: transform 0.3s cubic-bezier(.4,2,.6,1);
+    }
+
+    #video-photo-list .video-img:hover {
+      transform: scale(1.06);
+    }
+
+    /* 筛选按钮样式优化 */
+    .d-flex.justify-content-center.mb-4 {
+      gap: 1rem;
+    }
+
+    [data-filter-btn] {
+      margin: 0;
+      box-shadow: none;
+      transition: box-shadow 0.35s cubic-bezier(.4,1.6,.6,1), transform 0.35s cubic-bezier(.4,1.6,.6,1);
+    }
+
+    [data-filter-btn]:hover {
+      box-shadow: 0 8px 32px 0 rgba(140, 140, 200, 0.16);
+      transform: translateY(-7px) scale(1.08);
+      z-index: 2;
+    }
+
+    .btn.active[data-filter-btn] {
+      background: #d1d5db !important;
+      color: #111 !important;
+    }
+
+    /* 赞赏按钮样式 */
+    .appreciate-btn {
+      background: transparent;
+      border: 1px solid #bfa14a;
+      color: #ffffff; /* 原值: #bfa14a */
+      padding: 5px 15px;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+    }
+
+    /* 液态玻璃按钮样式 */
+    .glass-button {
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0));
+      border: none;
+      border-radius: 12px;
+      padding: 10px 20px;
+      color: #ffffff; /* 原值: #bfa14a */
+      font-weight: bold;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+      position: relative;
+      overflow: hidden;
+      z-index: 1;
+      /* 新增：去除下划线 */
+      text-decoration: none;
+    }
+
+    .glass-button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s ease;
+      z-index: -1;
+    }
+
+    .glass-button:hover::before {
+      transform: scaleX(1);
+    }
+
+    .glass-button:hover {
+      box-shadow: 0 8px 60px rgba(0, 0, 0, 0.2);
+      transform: translateY(-2px);
+      /* 确保hover状态也无下划线 */
+      text-decoration: none;
+    }
+
+    /* 液态玻璃图片样式 */
+    .glass-image {
+      position: relative;
+      overflow: hidden;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+    }
+
+    .glass-image::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s ease;
+      z-index: -1;
+    }
+
+    .glass-image:hover::before {
+      transform: scaleX(1);
+    }
+
+    .glass-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .glass-image:hover img {
+      transform: scale(1.05);
+    }
+
+    /* 新增：液态玻璃卡片内容样式 */
+    .glass-card-body {
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0));
+      box-shadow: 0 4px 30px rgba(0, 0, 0, 0.08);
+    }
+
+    .glass-card-body::before {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .glass-card-body:hover::before {
+      transform: scaleX(1);
+    }
+    .glass-card-body h6 {
+      color: #ffffff; /* 原值: #bfa14a */
+      font-weight: bold;
+    }
+
+    /* 新增：官方照片区域的图片样式 */
+    #photos .photo-img {
+      width: 100%;
+      height: 200px; /* 固定高度保持一致性 */
+      object-fit: cover;
+      border-radius: 12px;
+      transition: transform 0.3s cubic-bezier(.4,2,.6,1);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    #photos .photo-img:hover {
+      transform: scale(1.06);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    }
+
+    /* 修改：确保在手机端展开导航栏时，赞赏按钮不会被遮挡 */
+    @media (max-width: 992px) {
+      .navbar-collapse.show + .d-flex {
+        margin-top: 20px; /* 增加顶部间距，避免与展开的导航栏重叠 */
+      }
+    }
+  </style>
+
+  <!-- 引入 Bootstrap 和 Font Awesome -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <!-- 引入手写风格字体 -->
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet" />
+</head>
+<body style="color: #6e6259; min-height: 100vh;">
+  <!-- ====== 导航栏 ====== -->
+  <div class="container">
+    <nav class="navbar navbar-expand-lg navbar-light sticky-top">
+      <div class="container position-relative d-flex align-items-center">
+        <a class="navbar-brand" href="#">
+          <!-- 将文本logo替换为图片logo -->
+          <img src="https://img.picui.cn/free/2025/06/14/684d6d65a2da9.png" alt="TSClubCN" style="height: 40px;">
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link" href="#home" data-i18n="home">首页</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#latest-album">最新专辑</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#photos" data-i18n="photos">官方照片</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#videos" data-i18n="videos">视频作品</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#music" data-i18n="music">音乐作品</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#footer" data-i18n="followMe">Follow me</a>
+            </li>
+            <!-- 赞赏按钮恢复到菜单内部 -->
+            <li class="nav-item">
+              <button class="glass-button" type="button" data-bs-toggle="modal" data-bs-target="#appreciateModal">
+                <i class="fas fa-heart"></i> 赞赏
+              </button>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </div>
+
+  <!-- 赞赏模态框 -->
+  <div class="modal fade" id="appreciateModal" tabindex="-1" aria-labelledby="appreciateModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content" style="background: linear-gradient(145deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0)); border-radius: 16px; backdrop-filter: blur(10px); border: none;">
+        <div class="modal-header border-0">
+          <h5 class="modal-title" id="appreciateModalLabel"
+            style="color: #ffffff; font-family: 'Somer', cursive, sans-serif;">感谢您的赞赏</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body text-center" style="color: #ffffff;">
+          <p>如果您喜欢我的内容，可以通过以下方式支持</p>
+          <div class="row mt-4">
+            <div class="col-6">
+              <img src="微信赞赏码.JPG" alt="微信赞赏码" class="img-fluid rounded" style="max-height: 200px;" />
+              <p class="mt-2">微信赞赏码</p>
+            </div>
+            <div class="col-6">
+              <img src="支付宝支付.jpg" alt="支付宝支付" class="img-fluid rounded" style="max-height: 200px;" />
+              <p class="mt-2">支付宝支付</p>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer border-0 justify-content-center">
+          <button type="button" class="glass-button" data-bs-dismiss="modal">关闭</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== 最新专辑 ====== -->
+  <section id="latest-album" class="section-padding">
+    <div class="container">
+      <h2 class="text-center mb-4">最新专辑</h2>
+      <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+          <img src="苦难诗社宣传图.png" class="img-fluid" alt="苦难诗社宣传图" />
+          <a href="#music" class="glass-button my-4">立即收听</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== 图片区 ====== -->
+  <section id="photos" class="section-padding">
+    <div class="container">
+      <h2 class="text-center mb-4" data-i18n="photosTitle">官方照片</h2>
+      <!-- 筛选标签 -->
+      <div class="d-flex justify-content-center mb-4">
+        <button class="glass-button" data-filter-btn="all" data-i18n="filterAll">全部</button>
+        <button class="glass-button" data-filter-btn="street" data-i18n="filterStreet">街拍</button>
+        <button class="glass-button" data-filter-btn="album" data-i18n="filterAlbum">专辑</button>
+        <button class="glass-button" data-filter-btn="tour" data-i18n="filterTour">巡演</button>
+      </div>
+      <!-- 图片网格 - 移除卡片包装 -->
+      <div class="row justify-content-center">
+        <div class="col-6 col-lg-3 mb-4">
+          <a href="https://www.123865.com/s/8C85Vv-4bqAH" target="_blank">
+            <img src="专辑.jpg" alt="专辑" class="photo-img" />
+          </a>
+        </div>
+
+        <div class="col-6 col-lg-3 mb-4">
+          <a href="https://www.123865.com/s/8C85Vv-pbqAH" target="_blank">
+            <img src="街拍.png" alt="街拍" class="photo-img" />
+          </a>
+        </div>
+
+        <div class="col-6 col-lg-3 mb-4">
+          <a href="https://www.123865.com/s/8C85Vv-xbqAH" target="_blank">
+            <img src="巡演.png" alt="巡演" class="photo-img" />
+          </a>
+        </div>
+
+        <div class="col-6 col-lg-3 mb-4">
+          <a href="https://www.123865.com/s/8C85Vv-BbqAH" target="_blank">
+            <img src="更多g.png" alt="更多" class="photo-img" />
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== 视频区 ====== -->
+  <section id="videos" class="section-padding">
+    <div class="container">
+      <h2 class="text-center mb-4" data-i18n="videosTitle">视频作品</h2>
+      <div class="row justify-content-center gap-0" id="video-photo-list">
+        <div class="col-4 col-md-3 col-lg-2 mb-4">
+          <a href="https://www.123865.com/s/8C85Vv-fbqAH" target="_blank">
+            <img src="爱的告白.JPG" class="video-img" alt="视频图片1" />
+          </a>
+        </div>
+        <div class="col-4 col-md-3 col-lg-2 mb-4">
+          <a href="https://www.123865.com/s/8C85Vv-fbqAH" target="_blank">
+            <img src="1989.JPG" class="video-img" alt="视频图片2" />
+          </a>
+        </div>
+        <div class="col-4 col-md-3 col-lg-2 mb-4">
+          <a href="https://www.123865.com/s/8C85Vv-fbqAH" target="_blank">
+            <img src="举世盛名.JPG" class="video-img" alt="视频图片3" />
+          </a>
+        </div>
+        <div class="col-4 col-md-3 col-lg-2 mb-4">
+          <a href="https://www.123865.com/s/8C85Vv-fbqAH" target="_blank">
+            <img src="恋人之城.JPG" class="video-img" alt="视频图片4" />
+          </a>
+        </div>
+        <div class="col-4 col-md-3 col-lg-2 mb-4">
+          <a href="https://www.123865.com/s/8C85Vv-fbqAH" target="_blank">
+            <img src="美利坚女士.JPG" class="video-img" alt="视频图片5" />
+          </a>
+        </div>
+        <div class="col-4 col-md-3 col-lg-2 mb-4">
+          <a href="https://www.123865.com/s/8C85Vv-fbqAH" target="_blank">
+            <img src="时代巡回.JPG" class="video-img" alt="视频图片6" />
+          </a>
+        </div>
+        <div class="col-4 col-md-3 col-lg-2 mb-4">
+          <a href="https://www.123865.com/s/8C85Vv-fbqAH" target="_blank">
+            <img src="无畏之旅.JPG" class="video-img" alt="视频图片7" />
+          </a>
+        </div>
+        <div class="col-4 col-md-3 col-lg-2 mb-4">
+          <a href="https://www.123865.com/s/8C85Vv-fbqAH" target="_blank">
+            <img src="长池录音室.JPG" class="video-img" alt="视频图片8" />
+          </a>
+        </div>
+        <div class="col-4 col-md-3 col-lg-2 mb-4">
+          <a href="https://www.123865.com/s/8C85Vv-BbqAH" target="_blank">
+            <img src="更多.jpg" class="video-img" alt="视频图片9" />
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== 音乐区 ====== -->
+  <section id="music" class="section-padding">
+    <div class="container d-flex flex-wrap">
+      <div class="col-md-6">
+        <h2 class="mb-4" data-i18n="musicTitle">音乐作品</h2>
+        <div class="list-group">
+          <div class="list-group-item d-flex align-items-center glass-card-body" style="border-radius: 12px; overflow: hidden; margin: 0.5rem; transition: all 0.3s ease; background: linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0)); backdrop-filter: blur(10px); box-shadow: 0 4px 30px rgba(0, 0, 0, 0.08);">
+            <img src="IMG_5149.JPG" class="rounded-circle me-3" alt="专辑封面" style="width: 48px; height: 48px; object-fit: cover; transition: transform 0.3s ease;" />
+            <div>
+              <h6 class="mb-1" style="color: #bfa14a; font-weight: bold;">I Can Do It With a Broken Heart</h6>
+              <small class="text-muted d-block">Taylor Swift | 3:38</small>
+            </div>
+          </div>
+        </div>
+        <div class="text-center mt-3">
+          <a href="https://www.123865.com/s/8C85Vv-YbqAH" target="_blank" class="glass-button" data-i18n="moreMusic">更多音乐</a>
+        </div>
+      </div>
+      <div class="col-md-6 music-player">
+        <h2 class="mb-4" data-i18n="nowPlaying">正在播放</h2>
+        <div class="d-flex align-items-center mb-3">
+          <img src="IMG_5149.JPG" class="rounded-circle me-4" alt="专辑封面" id="album-cover" />
+          <div>
+            <h4 id="song-title">I Can Do It With a Broken Heart</h4>
+            <small>Taylor Swift</small>
+          </div>
+        </div>
+        <div class="audio-player-container mb-3">
+          <div class="time-display current-time">0:00</div>
+          <div class="progress-container">
+            <div class="progress-bg">
+              <div class="progress-fill" id="progress-fill"></div>
+            </div>
+            <input type="range" class="progress-input" id="progress-bar" min="0" max="100" value="0" />
+          </div>
+          <div class="time-display duration">-0:00</div>
+        </div>
+        <div class="play-btn-container">
+          <button class="play-btn" id="play-pause"><i class="fas fa-play"></i></button>
+        </div>
+        <audio id="audio-player" src="13-I Can Do It With a Broken Heart.mp3"></audio>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== 新增广告位 ====== -->
+  <section id="ad-section" class="section-padding">
+    <div class="container text-center">
+      <div class="glass-card-body p-4" style="border-radius: 24px; max-width: 800px; margin: 0 auto;">
+        <h3 class="mb-3">广告位</h3>
+        <div class="ad-container">
+          <!-- 广告内容占位符 -->
+          <img src="https://via.placeholder.com/728x90" alt="广告位" class="img-fluid rounded">
+        </div>
+        <p class="mt-3 small text-muted">广告位招租 - 请联系: 934331762@qq.com</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== 底部社交媒体 ====== -->
+  <footer class="bg-white p-4" id="footer">
+    <div class="container text-center">
+      <div class="mb-3">
+        <h5 data-i18n="footerFollow">Follow Me</h5>
+        <div class="d-flex justify-content-center">
+          <a href="https://img.picui.cn/free/2025/06/14/684d417f4c42a.jpg" class="btn btn-light m-1" target="_blank" title="微信">
+            <i class="fab fa-weixin"></i>
+          </a>
+          <a href="https://www.instagram.com/ooz.charles?igsh=MTM4NXFsOTE5M3NtMw%3D%3D&utm_source=qr" class="btn btn-light m-1" target="_blank" title="Instagram">
+            <i class="fab fa-instagram"></i>
+          </a>
+          <a href="https://youtube.com/@tayrep1213?si=1q-eWGIiiLUw-U8Z" class="btn btn-light m-1" target="_blank" title="YouTube">
+            <i class="fab fa-youtube"></i>
+          </a>
+          <a href="https://x.com/oliviabrow73120?s=21" class="btn btn-light m-1" target="_blank" title="X(Twitter)">
+            <i class="fab fa-x-twitter"></i>
+          </a>
+          <a href="https://www.tiktok.com/@tayrep1213?_t=ZS-8vqqoBYEi2O&_r=1" class="btn btn-light m-1" target="_blank" title="TikTok">
+            <i class="fab fa-tiktok"></i>
+          </a>
+          <a href="https://v.douyin.com/jIkWAuX_0AU/" class="btn btn-light m-1" target="_blank" title="抖音">
+            <i class="fas fa-music"></i>
+          </a>
+          <a href="https://www.xiaohongshu.com/user/profile/650d89db000000001603bcaf?xsec_token=YBJPYkCMs-TQeEpPRppDqSv1Ld7nVl7G7I8Ix9YB254HU=&xsec_source=app_share&xhsshare=CopyLink&appuid=650d89db000000001603bcaf&apptime=1749893345&share_id=af5c80e8dac144f2aa48d701475a07fb" class="btn btn-light m-1" target="_blank" title="小红书">
+            <i class="fas fa-book"></i>
+          </a>
+          <a href="https://b23.tv/pYh7uEg" class="btn btn-light m-1" target="_blank" title="哔哩哔哩">
+            <i class="fas fa-tv"></i>
+          </a>
+        </div>
+      </div>
+      <div><a href="#" style="color:#ffffff;font-weight:bold;">TS官链</a></div> <!-- 原值: #bfa14a -->
+      <div class="mt-2" style="color:#aaa; font-size: 15px;">2025 TaylorSwiftClubCN All Rights Reserved.</div>
+      <div class="mt-1">
+        <a href="disclaimer.html" style="color:#aaa; font-size: 14px;">免责声明</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ====== JavaScript（功能脚本） ====== -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // 定义API基础URL
+    const API_BASE_URL = 'http://localhost:3007';
+
+    // 添加滚动效果
+    document.addEventListener('DOMContentLoaded', function () {
+      window.addEventListener('scroll', function () {
+        const navbar = document.querySelector('.navbar');
+        if (window.scrollY > 50) {
+          navbar.style.boxShadow = '0 4px 20px rgba(0,0,0,0.2)';
+        } else {
+          navbar.style.boxShadow = '0 4px 20px rgba(0,0,0,0.15)';
+        }
+      });
+
+      // 解决手机端导航栏展开时与赞赏按钮重叠的问题
+      document.addEventListener('DOMContentLoaded', function () {
+        const navbarCollapse = document.getElementById('navbarNav');
+        const appreciateBtnContainer = document.querySelector('.d-flex.align-items-center');
+
+        navbarCollapse.addEventListener('show.bs.collapse', function () {
+          if (appreciateBtnContainer) {
+            appreciateBtnContainer.style.marginTop = '20px'; // 增加顶部间距
+          }
+        });
+
+        navbarCollapse.addEventListener('hidden.bs.collapse', function () {
+          if (appreciateBtnContainer) {
+            appreciateBtnContainer.style.marginTop = ''; // 恢复默认样式
+          }
+        });
+
+        // 初始状态检查
+        if (navbarCollapse.classList.contains('show')) {
+          if (appreciateBtnContainer) {
+            appreciateBtnContainer.style.marginTop = '20px';
+          }
+        }
+      });
+
+      if (window.innerWidth < 992 && navbarCollapse.classList.contains('show')) {
+        appreciateBtn.style.display = 'none';
+      }
+
+      window.addEventListener('resize', function () {
+        if (window.innerWidth >= 992) {
+          if (appreciateBtn) appreciateBtn.style.display = '';
+        } else if (navbarCollapse.classList.contains('show')) {
+          if (appreciateBtn) appreciateBtn.style.display = 'none';
+        }
+      });
+    });
+
+    // 官方照片筛选功能
+    document.querySelectorAll('[data-filter-btn]').forEach(btn => {
+      btn.addEventListener('click', function () {
+        document.querySelectorAll('[data-filter-btn]').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        const filter = this.getAttribute('data-filter-btn');
+        document.querySelectorAll('.masonry .card').forEach(card => {
+          if (filter === 'all' || card.getAttribute('data-filter') === filter) {
+            card.style.display = '';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      });
+    });
+
+    // 音乐播放控制
+    const playPauseBtn = document.getElementById('play-pause');
+    const albumCover = document.getElementById('album-cover');
+    const audio = document.getElementById('audio-player');
+    const progressBar = document.getElementById('progress-bar');
+    const progressFill = document.getElementById('progress-fill');
+    const currentTimeDisplay = document.querySelector('.current-time');
+    const durationDisplay = document.querySelector('.duration');
+
+    function formatTime(seconds) {
+      const mins = Math.floor(seconds / 60);
+      const secs = Math.floor(seconds % 60).toString().padStart(2, '0');
+      return `${mins}:${secs}`;
+    }
+
+    playPauseBtn.addEventListener('click', () => {
+      if (audio.paused) {
+        audio.play();
+        playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+        albumCover.style.animation = 'rotate 3s linear infinite';
+      } else {
+        audio.pause();
+        playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+        albumCover.style.animation = 'none';
+      }
+    });
+
+    audio.addEventListener('timeupdate', () => {
+      if (!isNaN(audio.duration)) {
+        const percentage = (audio.currentTime / audio.duration) * 100;
+        progressBar.value = percentage;
+        progressFill.style.width = percentage + '%';
+        currentTimeDisplay.textContent = formatTime(audio.currentTime);
+        durationDisplay.textContent = '-' + formatTime(audio.duration - audio.currentTime);
+      }
+    });
+
+    audio.addEventListener('loadedmetadata', () => {
+      durationDisplay.textContent = '-' + formatTime(audio.duration);
+    });
+
+    progressBar.addEventListener('input', () => {
+      if (!isNaN(audio.duration)) {
+        const percentage = progressBar.value;
+        audio.currentTime = (percentage / 100) * audio.duration;
+        progressFill.style.width = percentage + '%';
+        currentTimeDisplay.textContent = formatTime(audio.currentTime);
+        durationDisplay.textContent = '-' + formatTime(audio.duration - audio.currentTime);
+      }
+    });
+  </script>
+</body>
+</html>
