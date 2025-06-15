@@ -623,6 +623,11 @@
               <button class="glass-button" type="button" data-bs-toggle="modal" data-bs-target="#appreciateModal">
                 <i class="fas fa-heart"></i> 赞赏
               </button>
+            </li>            <!-- 新增订阅按钮 -->
+            <li class="nav-item">
+              <button class="glass-button" type="button" data-bs-toggle="modal" data-bs-target="#subscribeModal">
+                <i class="fas fa-envelope"></i> 订阅
+              </button>
             </li>
           </ul>
         </div>
@@ -651,6 +656,29 @@
               <p class="mt-2">支付宝支付</p>
             </div>
           </div>
+        </div>
+        <div class="modal-footer border-0 justify-content-center">
+          <button type="button" class="glass-button" data-bs-dismiss="modal">关闭</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 订阅模态框 -->
+  <div class="modal fade" id="subscribeModal" tabindex="-1" aria-labelledby="subscribeModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content" style="background: linear-gradient(145deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0)); border-radius: 16px; backdrop-filter: blur(10px); border: none;">
+        <div class="modal-header border-0">
+          <h5 class="modal-title" id="subscribeModalLabel" style="color: #ffffff; font-family: 'Somer', cursive, sans-serif;">立即订阅</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body text-center" style="color: #ffffff;">
+          <p>每天收到霉霉的最新消息</p>
+          <a href="mailto:taylorswiftclubcn@qq.com?subject=Taylor 消息订阅&body=订阅确认" class="glass-button my-3">
+            <i class="fas fa-envelope"></i> 打开邮箱应用
+          </a>
+          <p class="mt-2" style="font-size: 0.9rem; color: #ccc;">若未配置邮箱应用，请手动复制邮箱地址</p>
+          <p class="mt-2" style="font-size: 0.9rem; color: #ccc;">taylorswiftclubcn@qq.com</p>
         </div>
         <div class="modal-footer border-0 justify-content-center">
           <button type="button" class="glass-button" data-bs-dismiss="modal">关闭</button>
@@ -709,6 +737,23 @@
           </a>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- ====== 广告位 ====== -->
+  <section class="section-padding">
+    <div class="container">
+      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7723397351806731"
+        crossorigin="anonymous"></script>
+      <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-format="fluid"
+        data-ad-layout-key="-fb+62+3f-do+by"
+        data-ad-client="ca-pub-7723397351806731"
+        data-ad-slot="4637973721"></ins>
+      <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
     </div>
   </section>
 
@@ -820,7 +865,7 @@
           <!-- 广告内容占位符 -->
           <img src="https://via.placeholder.com/728x90" alt="广告位" class="img-fluid rounded">
         </div>
-        <p class="mt-3 small text-muted">广告位招租 - 请联系: 934331762@qq.com</p>
+        <p class="mt-3 small text-muted">广告位招租 - 请联系: taylorswiftclubcn@qq.com</p>
       </div>
     </div>
   </section>
